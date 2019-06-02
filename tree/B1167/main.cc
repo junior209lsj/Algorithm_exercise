@@ -51,8 +51,6 @@ class Delimeter
                 tmp.length = len;
 
                 T[node].info.push_back(tmp);
-                tmp.adj_node = node;
-                T[adj].info.push_back(tmp);
             }
         }
     }
@@ -81,7 +79,8 @@ class Delimeter
             bfs_queue.push(tmp);
         }
 
-        while(bfs_queue.empty()) {
+        while(!bfs_queue.empty()) {
+
             tmproot = bfs_queue.front();
             bfs_queue.pop();
 
@@ -109,9 +108,9 @@ class Delimeter
 
     void GetDelimeter()
     {
-        int far;
         GetInfo();
         BFS(1);
+        BFS(far_node);
         cout << length[far_node];
     }
 };
