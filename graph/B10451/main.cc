@@ -1,156 +1,48 @@
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <algorithm>
-
-#include <cstdio>
+#include<iostream>
+#include<vector>
 
 using namespace std;
 
-typedef vector< vector<int> > GRAPH;
+const int MAX = 1001;
 
-struct Edges
+int path[MAX];
+bool flag[MAX];
+
+void DFS(int *cnt, int start)
 {
-    size_t first;
-    size_t second;
-};
-
-struct Capacity
-{
-    size_t node_size;
-    size_t edge_size;
-};
-
-class Graph
-{
-    GRAPH G;
-    bool *flag;
-    Capacity Size;
-
-public:
-
-    Graph(Capacity siz, Edges* edges)
-    {
-        Size = siz;
-        G.reserve(siz.node_size + 1);
-        for(int i = 0; i < siz.edge_size; i++) {
-            G[edges[i].first].push_back(edges[i].second);
-            G[edges[i].second].push_back(edges[i].first);
-        }
-        flag = new bool[siz.node_size+1];
-    }
-
-    ~Graph() { }
-
-    void InitializeFlags()
-    {
-        for(int i = 1; i <= Size.node_size; i++) {
-            flag[i] = false;
-        }
-    }
-
-    void SortNodes()
-    {
-        for(int i = 1; i <= Size.node_size; i++)
-        {
-            sort(G[i].begin(), G[i].end());
-        }
-    }
-
-    void StartDFS(size_t start)
-    {
-        InitializeFlags();
-
-        DFS(start);
-
-        cout << endl;
-    }
-
-    void DFS(size_t start)
-    {
+    if(flag[start] == false) {
         flag[start] = true;
-        cout << start << ' ';
-
-        for(int i = 0; i < G[start].size(); i++) {
-            int tmp = G[start][i];
-            if(flag[tmp] == false) {
-                DFS(tmp, start);
-            }
-        }
+        DFS(cnt, path[start]);
     }
-
-    void DFS(size_t start, size_t cycle_check)
-    {
-        flag[start] = true;
-        cout << start << ' ';
-
-        for(int i = 0; i < G[start].size(); i++) {
-            int tmp = G[start][i];
-            if(flag[tmp] == false) {
-                DFS(tmp);
-            }
-        }
+    else {
+        *cnt = *cnt + 1;
     }
-
-    int CountCycle()
-    {
-        int res = 0;
-        InitializeFlags();
-        for(int i = 1; i <= Size.node_size; i++) {
-            if(flag[i] == false) {
-                
-
-            }
-        }
-
-    }
-
-    void BFS(size_t start)
-    {
-        InitializeFlags();
-        queue<int> q;
-        flag[start] = true;
-        q.push(start);
-        while(!q.empty()) {
-            int tmp = q.front();
-            q.pop();
-            cout << tmp << ' '; 
-            for(int i = 0; i < G[tmp].size(); i++) {
-                int temp = G[tmp][i];
-                if(flag[temp] == false) {
-                    flag[temp] = true;
-                    q.push(temp);
-                }
-            }
-        }
-
-        cout << endl;
-    }
-};
+}
 
 int main()
 {
-    Capacity cap;
-    int test_case;
-    cin >> test_case;
+    int T;
+    int cnt;
+    cin >> T;
 
-    while(test_case-- != 0) {
-        Edges *edges;
-        int sequence_size;
-        cin >> sequence_size;
-        cap.edge_size = sequence_size;
-        cap.node_size = sequence_size;
-        edges = new Edges[cap.edge_size];
-        for(int i = 0; i < sequence_size; i++) {
-            edges[i].first = i+1;
-            cin >> edges[i].second;
-        }
-        Graph mygraph(cap, edges);
-
+    for(int i = 0; i < T; i++) {
+        cnt = 0;
+        int nodes;
+        cin >> nodes;
         
-        delete[] edges;
-    }
+        for(int j = 1; j <= nodes; j++) {
+            cin >> path[j];
+            flag[j] = false;
+        }
 
+        for(int j = 1; j <= nodes; j++) {
+            if(flag[j] == false) {
+                DFS(&cnt, j);
+            }
+        }
+
+        cout << cnt << endl;
+    }
 
     return 0;
 }
