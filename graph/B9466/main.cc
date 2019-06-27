@@ -2,39 +2,39 @@
 #include<vector>
 #include<stack>
 
+#include<cstdio>
+
 using namespace std;
 
 const int MAX = 100001;
 
-bool flag[MAX];
-bool Isteam[MAX];
+int flag[MAX];
+int cycle[MAX];
+int path[MAX];
 
-void InitiailizeFlags(bool *flags, int nodes)
+void InitiailizeFlags(int *flags, int nodes)
 {
-    for(int i = 0; i < nodes; i++) {
-        flags[i] = false;
+    for(int i = 1; i <= nodes; i++) {
+        flags[i] = 0;
     }
 }
 
-bool DFS(int start, int point, vector<int> path, stack<int> check)
+int DFS(int start, int point, int count)
 {
-    if(flag[point] == false) {
-        flag[point] = true;
-        check.push(point);
-        DFS(start, path[point], path, check);
+    flag[point] = count;
+    cycle[point] = start;
+
+    int next = path[point];
+
+    if(flag[next] == 0) {
+        DFS(start, next, count + 1);
     }
     else {
-        if(point == start) {
-            int tmp;
-            while(!check.empty()) {
-                tmp = check.top();
-                check.pop();
-                Isteam[tmp] = true;
-            }
-            return true;
+        if(cycle[next] == start) {
+            return count - flag[next] + 1;
         }
         else {
-            return false;
+            return 0;
         }
     }
 }
@@ -42,39 +42,30 @@ bool DFS(int start, int point, vector<int> path, stack<int> check)
 int main()
 {
     int T;
-    cin >> T;
+    scanf("%d", &T);
     for(int tcase = 0; tcase < T; tcase++) 
     {
         int cnt = 0;
         int nodes;
-        cin >> nodes;
-        vector<int> path(nodes);
+        scanf("%d", &nodes);
 
         //초기화
-        for(int i = 0; i < nodes; i++) {
-            cin >> path[i];
+        for(int i = 1; i <= nodes; i++) {
+            scanf("%d", (path+i));
         }
         InitiailizeFlags(flag, nodes);
-        InitiailizeFlags(Isteam, nodes);
+        //InitiailizeFlags(cycle, nodes);
 
-        for(int i = 0; i < nodes; i++) {
-            InitiailizeFlags(flag, nodes);
-            stack<int> check;
-            if(Isteam[i] == false) {
-                DFS(i, i, path, check);
+        for(int i = 1; i <= nodes; i++) {
+            if(flag[i] != 0) {
+                continue;
             }
-        }
-
-        for(int i = 0; i < nodes; i++) {
-            if(Isteam[i] == false) {
-                cnt++;
+            if(flag[path[i]] == 0) {
+                cnt += DFS(i, i, 1);
             }
         }
         
-        cout << cnt << endl;
-
-        //메모리 해제
-        path.clear();
-        vector<int>().swap(path);
+        printf("%d\n", nodes - cnt);
     }
+    return 0;
 }
